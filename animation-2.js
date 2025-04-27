@@ -1,38 +1,34 @@
 (function () {
-  // Register GSAP plugins once
+  // Register GSAP plugins
   gsap.registerPlugin(ScrollTrigger, Flip);
 
-  // Utility: Check if device is touch-enabled (consolidated from duplicates)
+  // Utility function
   function isTouchDevice() {
     return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   }
 
-  // === Benefits Cards Fade In ===
-  const items = gsap.utils.toArray(".features_item");
+  // Benefits cards fade in
+  const items = document.querySelectorAll(".features_item");
   items.forEach((item) => {
-    gsap.fromTo(
-      item,
-      { opacity: 0, yPercent: 10 },
-      {
-        opacity: 1,
-        yPercent: 0,
-        scrollTrigger: {
-          trigger: item,
-          start: 'top bottom',
-          end: 'top center',
-          scrub: true,
-        },
+    gsap.fromTo(item, { opacity: 0, yPercent: 10 }, {
+      opacity: 1,
+      yPercent: 0,
+      scrollTrigger: {
+        trigger: item,
+        start: 'top bottom',
+        end: 'top center',
+        markers: false,
+        scrub: true,
       }
-    );
+    });
   });
 
-  // === Big Button Flip ===
+  // Big button flip
   if (!isTouchDevice()) {
     gsap.defaults({
       duration: 0.35,
-      ease: "power1.inOut",
+      ease: "power1.inOut"
     });
-
     $('.cta_btn_wrap').each(function () {
       let $btn = $(this);
       let $circle = $btn.find('.cta_btn_circle');
@@ -40,7 +36,6 @@
       let $paddingRight = $btn.find(".cta_btn_space_right");
       let $svg = $btn.find(".cta_btn_svg");
       let $shadow = $btn.find(".cta_btn_shadow");
-
       $btn.on('mouseenter', function () {
         let state = Flip.getState($circle);
         $circle.addClass('is-active');
@@ -51,7 +46,6 @@
         gsap.to($svg, { rotate: 360 });
         gsap.to($shadow, { opacity: 0.5 });
       });
-
       $btn.on('mouseleave', function () {
         let state = Flip.getState($circle);
         $circle.removeClass('is-active');
@@ -65,20 +59,18 @@
     });
   }
 
-  // === Regular Button Flip ===
+  // Regular button flip
   if (!isTouchDevice()) {
     gsap.defaults({
       duration: 0.3,
-      ease: "quart.inOut",
+      ease: "quart.inOut"
     });
-
     $('.btn_flip_wrap').each(function () {
       let $btn = $(this);
       let $circle = $btn.find('.btn_flip_circle');
       let $text = $btn.find('.btn_flip_text_double');
       let $arrow = $btn.find('.btn_flip_arrow_wrap');
       let $shadow = $btn.find(".cta_btn_shadow");
-
       $btn.on('mouseenter', function () {
         let state = Flip.getState($circle);
         $circle.addClass('is-active');
@@ -87,7 +79,6 @@
         gsap.to($arrow, { x: -24 });
         gsap.to($shadow, { opacity: 0.5 });
       });
-
       $btn.on('mouseleave', function () {
         let state = Flip.getState($circle);
         $circle.removeClass('is-active');
@@ -99,9 +90,9 @@
     });
   }
 
-  // === Case Study Tabs ===
+  // Case study tabs
   function initTabSystem() {
-    const wrappers = gsap.utils.toArray('[data-tabs="wrapper"]');
+    const wrappers = document.querySelectorAll('[data-tabs="wrapper"]');
     wrappers.forEach((wrapper) => {
       const contentItems = wrapper.querySelectorAll('[data-tabs="content-item"]');
       const autoplay = wrapper.dataset.tabsAutoplay === "true";
@@ -109,7 +100,6 @@
       let activeContent = null;
       let isAnimating = false;
       let progressBarTween = null;
-
       function startProgressBar(index) {
         if (progressBarTween) progressBarTween.kill();
         const bar = contentItems[index].querySelector('[data-tabs="item-progress"]');
@@ -127,7 +117,6 @@
           },
         });
       }
-
       function switchTab(index) {
         if (isAnimating || contentItems[index] === activeContent) return;
         isAnimating = true;
@@ -151,27 +140,20 @@
             .to(outgoingBar, { scaleX: 0, duration: 0.3 }, 0)
             .to(outgoingContent.querySelector('[data-tabs="item-details"]'), { height: 0 }, 0);
         }
-        tl.fromTo(
-          incomingContent.querySelector('[data-tabs="item-details"]'),
-          { height: 0 },
-          { height: "auto" },
-          0
-        ).set(incomingBar, { scaleX: 0, transformOrigin: "left center" }, 0);
+        tl.fromTo(incomingContent.querySelector('[data-tabs="item-details"]'), { height: 0 }, { height: "auto" }, 0)
+          .set(incomingBar, { scaleX: 0, transformOrigin: "left center" }, 0);
       }
-
       switchTab(0);
-      contentItems.forEach((item, i) =>
-        item.addEventListener("click", () => {
-          if (item === activeContent) return;
-          switchTab(i);
-        })
-      );
+      contentItems.forEach((item, i) => item.addEventListener("click", () => {
+        if (item === activeContent) return;
+        switchTab(i);
+      }));
     });
   }
   initTabSystem();
 
-  // === FAQ Accordion ===
-  gsap.utils.toArray('[data-accordion-css-init]').forEach((accordion) => {
+  // FAQ accordion
+  document.querySelectorAll('[data-accordion-css-init]').forEach((accordion) => {
     const closeSiblings = accordion.getAttribute('data-accordion-close-siblings') === 'true';
     accordion.addEventListener('click', (event) => {
       const toggle = event.target.closest('[data-accordion-toggle]');
@@ -188,58 +170,51 @@
     });
   });
 
-  // === Project Process Fade ===
-  const steps = gsap.utils.toArray(".steps_timeline-step");
-  steps.forEach((step) => {
+  // Project process fade
+  const steps = document.querySelectorAll(".steps_timeline-step");
+  steps.forEach((step, index) => {
     const progressLine = step.querySelector(".steps_timeline_progress");
-    gsap.fromTo(
-      step,
-      { opacity: 0 },
-      {
-        opacity: 1,
-        ease: 'power4.inOut',
-        scrollTrigger: {
-          trigger: step,
-          start: 'clamp(top bottom)',
-          end: 'clamp(top 20%)',
-          scrub: true,
-        },
+    gsap.fromTo(step, { opacity: 0 }, {
+      opacity: 1,
+      ease: 'power4.inOut',
+      scrollTrigger: {
+        trigger: step,
+        start: 'clamp(top bottom)',
+        end: 'clamp(top 20%)',
+        scrub: true,
+        markers: false,
       }
-    );
-    gsap.fromTo(
-      progressLine,
-      { scaleY: 0 },
-      {
-        scaleY: 1,
-        transformOrigin: "top",
-        ease: 'none',
-        scrollTrigger: {
-          trigger: step,
-          start: 'clamp(top center)',
-          end: 'clamp(bottom center)',
-          scrub: true,
-        },
+    });
+    gsap.fromTo(progressLine, { scaleY: 0 }, {
+      scaleY: 1,
+      transformOrigin: "top",
+      ease: 'none',
+      scrollTrigger: {
+        trigger: step,
+        start: 'clamp(top center)',
+        end: 'clamp(custom center)',
+        scrub: true,
       }
-    );
+    });
   });
 
-  // === Marquee Fade In ===
+  // Marquee fade in
   gsap.to(".marquee-advanced", {
     opacity: 1,
     duration: 2,
     delay: 0.5,
   });
 
-  // === Marquee Scroll Direction ===
+  // Marquee scroll direction
   function initMarqueeScrollDirection() {
-    gsap.utils.toArray('[data-marquee-scroll-direction-target]').forEach((marquee) => {
+    document.querySelectorAll('[data-marquee-scroll-direction-target]').forEach((marquee) => {
       const marqueeContent = marquee.querySelector('[data-marquee-collection-target]');
       const marqueeScroll = marquee.querySelector('[data-marquee-scroll-target]');
       if (!marqueeContent || !marqueeScroll) return;
-      const { marqueeSpeed, marqueeDirection, marqueeDuplicate } = marquee.dataset;
-      const marqueeSpeedAttr = parseFloat(marqueeSpeed) || 1;
-      const marqueeDirectionAttr = marqueeDirection === 'right' ? 1 : -1;
-      const duplicateAmount = parseInt(marqueeDuplicate) || 0;
+      const { marqueeSpeed: speed, marqueeDirection: direction, marqueeDuplicate: duplicate } = marquee.dataset;
+      const marqueeSpeedAttr = parseFloat(speed) || 1;
+      const marqueeDirectionAttr = direction === 'right' ? 1 : -1;
+      const duplicateAmount = parseInt(duplicate) || 0;
       const speedMultiplier = window.innerWidth < 479 ? 0.25 : window.innerWidth < 991 ? 0.5 : 1;
       let marqueeSpeed = marqueeSpeedAttr * (marqueeContent.offsetWidth / window.innerWidth) * speedMultiplier;
       if (duplicateAmount > 0) {
@@ -256,47 +231,44 @@
         duration: marqueeSpeed,
         ease: 'linear',
         modifiers: {
-          xPercent: gsap.utils.wrap(-100, 100),
-        },
+          xPercent: gsap.utils.wrap(-100, 100)
+        }
       });
     });
   }
   initMarqueeScrollDirection();
 
-  // === Navbar Close ===
+  // Navbar close
   $("a[href^='#']").click(function () {
     $(".w-nav-menu").removeClass("w--nav-menu-open");
     $(".w-nav-button").removeClass("w--nav-button-open");
     $(".w-nav-overlay").css("display", "none");
   });
 
-  // === Split Text ===
+  // Split text
   document.fonts.ready.then(() => {
-    document.querySelectorAll(".statement_text").forEach((element) => {
+    document.querySelectorAll(".statement_text").forEach(function (element) {
       if (element.dataset.scriptInitialized) return;
       element.dataset.scriptInitialized = "true";
       const text = element.textContent;
-      element.innerHTML = text
-        .split(' ')
-        .map((word) => `<span class="word">${word}</span>`)
-        .join(' ');
+      element.innerHTML = text.split(' ').map(word => `<span class="word">${word}</span>`).join(' ');
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: element,
           start: "top bottom",
           end: "bottom center",
-          scrub: true,
-        },
+          scrub: true
+        }
       });
       tl.from(element.querySelectorAll(".word"), {
         "--text_1_line-width": "0%",
         stagger: 0.5,
-        ease: "none",
+        ease: "none"
       });
     });
   });
 
-  // === Team Hover ===
+  // Team hover
   if (!isTouchDevice()) {
     for (let i = 1; i <= 3; i++) {
       const item = document.querySelector(`#team-item-${i}`);
@@ -309,9 +281,9 @@
     }
   }
 
-  // === Services Pinned Scroll ===
-  const slides = gsap.utils.toArray('.gsap_wrap .gsap_slide');
-  slides.forEach((slide) => {
+  // Services pinned scroll
+  const slides = document.querySelectorAll('.gsap_wrap .gsap_slide');
+  slides.forEach(slide => {
     const contentWrapper = slide.querySelector('.gsap_content_wrap');
     const content = slide.querySelector('.gsap_content');
     gsap.to(content, {
@@ -323,8 +295,8 @@
         trigger: slide,
         start: 'clamp(top 0%)',
         end: '+=' + window.innerHeight,
-        scrub: true,
-      },
+        scrub: true
+      }
     });
     gsap.to(content, {
       autoAlpha: 0,
@@ -334,9 +306,8 @@
         trigger: content,
         start: 'clamp(top -80%)',
         end: '+=' + 0.2 * window.innerHeight,
-        scrub: true,
-      },
+        scrub: true
+      }
     });
   });
-
 })();
